@@ -38,6 +38,10 @@ namespace qh
     private:
 
         KeyItems keys_set_;
+	private:
+		//增加函数，用于提取子字符串
+		static int getMatchIndexIncrement(const std::string &keys,const std::string &raw_url,int lastIndex);
+	    static int getIndex(const std::string &keys,const std::string &raw_url);
     };
 }
 
