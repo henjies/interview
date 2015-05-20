@@ -14,6 +14,7 @@ namespace qh
 
     public:
 //#define private public  //仅仅为了测试用
+
 		//迭代器的一些类型定义
 		typedef T value_type;
 		typedef value_type* pointer;
@@ -85,7 +86,7 @@ namespace qh
 				std::cout << "insert下标无效！" << std::endl;
 				assert(false);
 			}
-			return insert(diff,val);
+			return insert(diff+1,val);
 		}
 
 		iterator insert(size_t position,const T &val)
@@ -100,7 +101,7 @@ namespace qh
 			if (size_ >= CapacityEnd)
 				reAllocateMemory(2*CapacityEnd);
 			BackCopyMemory(position);
-			data_[position] = val;
+			data_[position-1] = val;
 			++size_;
 
 			return data_ + position;
@@ -121,7 +122,7 @@ namespace qh
 
 		iterator erase(iterator position)
 		{
-			size_t diff = position - data_;
+			size_t diff = position - data_ + 1;
 
 			return erase(diff);
 		}
@@ -150,7 +151,7 @@ namespace qh
 		{
 			T* tempDataPtr = NULL;
 			tempDataPtr = new T[num];
-			for(size_t i=0; i < CapacityEnd; ++i)
+			for(size_t i=0; i < size_; ++i)
 			{
 				tempDataPtr[i] = data_[i];
 			}
@@ -163,17 +164,16 @@ namespace qh
 		//插入的时候，从插入点往后移一位
 		void BackCopyMemory(size_t start)
 		{
-			for(size_t i=size_;i > start;--i)
+			for(size_t i=size_;i >= start;--i)
 				data_[i] = data_[i-1];
 		}
 		//删除的时候，从删除点往前移一位
 		void ForwardCopyMemory(size_t start)
 		{
-			for(size_t i=start; i<size_;++i)
+			for(size_t i=start; i < size_;++i)
 				data_[i-1] = data_[i];
 		}
 			
-
     private:
         T*      data_;			//存储的内存的地址，也是首元素指针
         size_t  size_;			//当前已经使用分配的内存
@@ -290,7 +290,9 @@ namespace qh
 		}
 		if (num <= size_)
 			return;
-		while (num >= CapacityEnd);//判断是否需要重新分配内存
+		if (CapacityEnd == 0)
+			reAllocateMemory(2);
+		while (num >= CapacityEnd)//判断是否需要重新分配内存
 		{
 			reAllocateMemory(2*CapacityEnd);
 		}
@@ -298,6 +300,7 @@ namespace qh
 		{
 			data_[i] = element;
 		}
+		size_ = num;
 	}
 
 	template<class T>
@@ -321,7 +324,7 @@ namespace qh
 	template<class T>
 	bool vector<T>::empty() const
 	{
-		return size_ != 0;
+		return size_ == 0;
 	}
 
 }
